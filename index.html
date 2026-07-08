@@ -1,0 +1,143 @@
+<!doctype html>
+<!--
+  Waitlist wiring - operator instructions
+  --------------------------------------
+  The CTA form POSTs the entered email as JSON to whatever URL is set in the
+  <meta name="waitlist-endpoint" content="..."> tag below. Any endpoint that
+  accepts a JSON POST and returns 2xx on success will work. Two zero-cost paths:
+
+    1) Formspree (recommended, no server): create a free form at
+       https://formspree.io, copy the form id (e.g. `xyzabcde`), and set
+       content="https://formspree.io/f/xyzabcde" on the meta tag below.
+       Formspree accepts JSON POST and returns 200 on success. The form id
+       is public by design; do NOT paste any auth token into this file.
+
+    2) Own endpoint: point content="..." at any HTTPS URL that accepts
+       `{"email":"..."}` and returns 2xx. Server writes to
+       `.agent/waitlist.jsonl` (or any store).
+
+  Success shows `.msg.ok`; any non-2xx or network error shows `.msg.err`.
+  Until the meta tag holds a real URL, submissions will fail visibly (err
+  path) - which is intentional, so wiring gaps are loud.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RegressGuard - Catch prompt regressions before you ship</title>
+<meta name="description" content="A hosted CI eval harness for LLM apps. Open a PR, we run your eval suite against the changed prompt, and comment green or red before merge.">
+<meta name="theme-color" content="#0b0f19">
+<!-- Replace the content= value with your Formspree form URL (or any 2xx-returning JSON POST endpoint) to go live. -->
+<meta name="waitlist-endpoint" content="https://formspree.io/f/REPLACE_WITH_FORM_ID">
+<style>
+:root{--bg:#0b0f19;--fg:#e6e8ee;--muted:#9aa3b2;--brand:#7c5cff;--brand-2:#39d0d8;--card:#111726;--border:#1e2536}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--brand-2);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:960px;margin:0 auto;padding:24px}
+header{display:flex;justify-content:space-between;align-items:center;padding:16px 0}
+.brand{font-weight:700;letter-spacing:.2px}
+.brand span{color:var(--brand)}
+main{padding:56px 0 24px}
+h1{font-size:clamp(28px,5vw,44px);line-height:1.15;margin:0 0 16px;letter-spacing:-.5px}
+.lede{font-size:clamp(16px,2.2vw,19px);color:var(--muted);margin:0 0 28px;max-width:640px}
+.cta{display:flex;gap:8px;flex-wrap:wrap;max-width:520px;margin:0 0 12px}
+.cta input[type=email]{flex:1;min-width:220px;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:#0e1424;color:var(--fg);font:inherit}
+.cta input[type=email]:focus{outline:2px solid var(--brand);outline-offset:1px}
+.cta button{padding:12px 18px;border-radius:10px;border:0;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#0b0f19;font-weight:700;cursor:pointer;font:inherit}
+.cta button:hover{filter:brightness(1.05)}
+.cta .msg{width:100%;color:var(--muted);font-size:14px;min-height:20px}
+.cta .msg.ok{color:#7de3a0}
+.cta .msg.err{color:#ff8a8a}
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:56px 0 24px}
+.feature{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+.feature h3{margin:0 0 8px;font-size:17px}
+.feature p{margin:0;color:var(--muted);font-size:14px}
+footer{color:var(--muted);font-size:13px;padding:32px 0 16px;border-top:1px solid var(--border);margin-top:48px}
+@media (max-width:640px){
+  .features{grid-template-columns:1fr}
+  main{padding:32px 0 16px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">Regress<span>Guard</span></div>
+    <a href="#waitlist" aria-label="Join the waitlist">Join waitlist</a>
+  </header>
+  <main>
+    <h1>Catch prompt regressions before you ship.</h1>
+    <p class="lede">A hosted CI eval harness for LLM apps. Open a PR, RegressGuard runs your eval suite against the changed prompt or model, and posts a green or red comment before merge.</p>
+
+    <form class="cta" id="waitlist" name="waitlist" method="POST" novalidate>
+      <p hidden><label>Do not fill this out: <input name="bot-field" autocomplete="off"></label></p>
+      <input type="email" name="email" id="email" placeholder="you@company.com" autocomplete="email" required aria-label="Work email">
+      <button type="submit" id="submitBtn">Get early access</button>
+      <div class="msg" id="msg" role="status" aria-live="polite"></div>
+    </form>
+
+    <section class="features" aria-label="Features">
+      <div class="feature">
+        <h3>PR-native eval runs</h3>
+        <p>GitHub App drops in on any repo. Every PR that touches a prompt or model config gets a full eval pass, no manual triggers.</p>
+      </div>
+      <div class="feature">
+        <h3>Rich assertion library</h3>
+        <p>Exact-match, contains, regex, JSON-schema, and LLM-as-judge assertions. Mix them per test case. Fail loud, pass fast.</p>
+      </div>
+      <div class="feature">
+        <h3>Hard-case dataset</h3>
+        <p>Every regression you catch gets added to your team's dataset. Your evals get sharper with every PR. Portable, exportable, yours.</p>
+      </div>
+    </section>
+  </main>
+  <footer>
+    (c) 2026 Glasshouse Labs - RegressGuard - <a href="mailto:hello@glasshouselabs.dev">hello@glasshouselabs.dev</a>
+  </footer>
+</div>
+<script>
+(function(){
+  var form=document.getElementById('waitlist');
+  var msg=document.getElementById('msg');
+  var btn=document.getElementById('submitBtn');
+  var meta=document.querySelector('meta[name="waitlist-endpoint"]');
+  var endpoint=meta?meta.getAttribute('content'):'';
+  var EMAIL_RE=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  function setMsg(text,cls){msg.textContent=text;msg.className='msg'+(cls?' '+cls:'');}
+
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    // Honeypot: silently drop obvious bots.
+    var hp=form.querySelector('input[name="bot-field"]');
+    if(hp && hp.value){setMsg('Thanks.','ok');return;}
+    var email=document.getElementById('email').value.trim();
+    if(!EMAIL_RE.test(email)){setMsg('Please enter a valid email address.','err');return;}
+    if(!endpoint || endpoint.indexOf('REPLACE_WITH_FORM_ID')!==-1){
+      setMsg('Waitlist endpoint not configured yet - please email hello@glasshouselabs.dev.','err');
+      return;
+    }
+    setMsg('Saving...','');
+    btn.disabled=true;
+    fetch(endpoint,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({email:email})
+    })
+      .then(function(r){
+        if(r.ok){
+          setMsg('You are on the list. We will email you when RegressGuard opens up.','ok');
+          form.reset();
+        } else {
+          setMsg('Could not save your email (status '+r.status+'). Please try again in a moment.','err');
+        }
+      })
+      .catch(function(){setMsg('Network error - please check your connection and try again.','err');})
+      .then(function(){btn.disabled=false;});
+  });
+})();
+</script>
+</body>
+</html>
